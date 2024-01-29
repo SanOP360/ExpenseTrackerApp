@@ -1,0 +1,43 @@
+/* Header.css */
+
+/* Header.css */
+
+.navbar {
+  background-color: black;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.logout-btn:hover {
+  background-color: #c82333;
+}
+
+/* Optional: Add styles for links */
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #ffc107; /* Change color on hover */
+}

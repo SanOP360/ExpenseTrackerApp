@@ -4,6 +4,10 @@ import AuthContext from "../store/AuthContext";
 
 const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [name, setName] = useState("");
+  const [img, setImg] = useState("");
+    const [email, setEmail] = useState("");
+
   const nameInputRef = useRef();
   const photoInputRef = useRef();
   const ctx = useContext(AuthContext);
@@ -14,7 +18,7 @@ const Profile = () => {
 
       try {
         const response = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A`, // Replace [API_KEY] with your API key
+          `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A`,
           {
             method: "POST",
             body: JSON.stringify({
@@ -34,8 +38,9 @@ const Profile = () => {
         const data = await response.json();
         const userData = data.users[0];
 
-        nameInputRef.current.value = userData.displayName || "";
-        photoInputRef.current.value = userData.photoUrl || "";
+        setName(userData.displayName || "");
+        setImg(userData.photoUrl || "");
+        setEmail(userData.email || "");
       } catch (err) {
         alert(err.message);
       } finally {
@@ -46,48 +51,43 @@ const Profile = () => {
     fetchUserData();
   }, [ctx.idToken]);
 
+  const sendVerificationEmail = async () => {
+    const idToken = ctx.idToken;
 
+    try {
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            requestType: "VERIFY_EMAIL",
+            idToken,
+          }),
+          headers: {
+            "Content-type": "application/json",
+          },
+        }
+      );
 
-const sendVerificationEmail = async () => {
-  const idToken = ctx.idToken;
-
-  try {
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          requestType: "VERIFY_EMAIL",
-          idToken,
-        }),
-        headers: {
-          "Content-type": "application/json",
-        },
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("Error sending verification email:", data.error);
+        if (data.error?.message === "TOO_MANY_ATTEMPTS_TRY_LATER") {
+          console.log("Retrying after delay...");
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+          sendVerificationEmail();
+        } else {
+          throw new Error(
+            data.error?.message || "Failed to send verification email"
+          );
+        }
       }
-    );
 
-    if (!response.ok) {
-      const data = await response.json();
-      console.error("Error sending verification email:", data.error);
-      if (data.error?.message === "TOO_MANY_ATTEMPTS_TRY_LATER") {
-        
-        console.log("Retrying after delay...");
-        await new Promise((resolve) => setTimeout(resolve, 5000)); 
-        sendVerificationEmail(); 
-      } else {
-        throw new Error(
-          data.error?.message || "Failed to send verification email"
-        );
-      }
+      console.log("Verification email sent successfully!");
+    } catch (err) {
+      alert(err.message);
     }
-
-    console.log("Verification email sent successfully!");
-  } catch (err) {
-    alert(err.message);
-  }
-};
-
-
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -98,7 +98,7 @@ const sendVerificationEmail = async () => {
       const idToken = ctx.idToken;
 
       const response = await fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A", 
+        "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A",
         {
           method: "POST",
           body: JSON.stringify({
@@ -118,7 +118,7 @@ const sendVerificationEmail = async () => {
       }
 
       console.log("Profile updated successfully!");
-      sendVerificationEmail(); 
+      sendVerificationEmail();
     } catch (err) {
       alert(err.message);
     } finally {
@@ -127,30 +127,45 @@ const sendVerificationEmail = async () => {
   };
 
   return (
-    <form className="profileUpdateForm">
-      <h1>Input the following field to update profile</h1>
-      <div className="labelInput">
-        <label htmlFor="Name">Full Name</label>
-        <input type="text" ref={nameInputRef} />
-      </div>
+    <>
+      <form className="profileUpdateForm">
+        <h1>Input the following field to update profile</h1>
+        <div className="labelInput">
+          <label htmlFor="Name">Full Name</label>
+          <input type="text" ref={nameInputRef} />
+        </div>
 
-      <div className="labelInput">
-        <label htmlFor="Photo">Profile Photo Url</label>
-        <input type="url" ref={photoInputRef} />
-      </div>
-      <div className="buttonUpdate">
-        <button onClick={submitHandler} disabled={isLoading}>
-          {isLoading ? "Loading..." : "Update"}
-        </button>
-      </div>
+        <div className="labelInput">
+          <label htmlFor="Photo">Profile Photo Url</label>
+          <input type="url" ref={photoInputRef} />
+        </div>
+        <div className="buttonUpdate">
+          <button onClick={submitHandler} disabled={isLoading}>
+            {isLoading ? "Loading..." : "Update"}
+          </button>
+        </div>
+      </form>
 
-      
-      <div className="buttonVerifyEmail">
-        <button type="button"onClick={sendVerificationEmail} disabled={isLoading}>
-          Verify Email
-        </button>
-      </div>
-    </form>
+      <section className="details">
+        <ul>
+          <li className="detailList">{name}</li>
+          <li className="profImg">
+            <img src={img} alt="" />
+          </li>
+          <li>{email}</li>
+        </ul>
+
+        <div className="buttonVerifyEmail">
+          <button
+            type="button"
+            onClick={sendVerificationEmail}
+            disabled={isLoading}
+          >
+            Verify Email
+          </button>
+        </div>
+      </section>
+    </>
   );
 };
 

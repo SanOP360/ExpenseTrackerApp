@@ -7,10 +7,10 @@ const Home=()=>{
       <div className="Home">
         <h1>WELCOME TO Expense Tracker</h1>
         <section>
-          <p>Your profile is only 60% completed.</p>
+          <p>To Update or Complete your Profile!</p>
           <p>Click 
             <button className="HereBtn" onClick={()=>{navigate('/Profile')}}>Here</button>
-            to complete it
+            
           </p>
         </section>
       </div>
