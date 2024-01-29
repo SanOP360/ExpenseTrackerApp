@@ -1,12 +1,72 @@
 .HereBtn{
     color:Green;
+    background-color: transparent;
+    font-size: 2rem;
+    border:none;cursor: pointer;
+    
+}
+.HereBtn:hover{
+    color:rgba(0, 128, 0, 0.83);
+    font-size: 2.1rem;
+    border-bottom: 8px solid green;
 }
 
 .Home{
+    width: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+
+}
+.Home h1{
+    text-align: center;
+}
+
+.Home section{
+    text-align: center;
 }
 
 .Home section p{
     font-size: 2rem;
+}
+
+/* Profile */
+
+
+.profileUpdataForm{
+    display: flex;
+    justify-content: space-between;
+    
+}
+.profileUpdataForm h1{
+    color:blue;
+}
+
+
+
+.labelInput{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.labelInput label{
+    font-size: 2rem;
+}
+
+.labelInput input{
+    font-size: 2rem;
+    padding: 5px;
+}
+
+.profileUpdataForm button{
+    /* justify-content: center; */
+    background-color: blue;
+    /* height: 2rem; */
+    width: auto;
+    color:black;
+    color:white;
+    margin-right:2rem ;
+    cursor:pointer;
+
 }

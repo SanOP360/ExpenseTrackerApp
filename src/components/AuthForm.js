@@ -1,6 +1,7 @@
-import React,{useState,useRef} from 'react'
+import React,{useState,useRef, useContext} from 'react'
 import { useNavigate } from 'react-router-dom';
 import classes from "./AuthForm.module.css";
+import AuthContext from './store/AuthContext';
 const AuthForm=()=>{
 
      const [isLoading, setIsLoading] = useState(false);
@@ -8,6 +9,7 @@ const AuthForm=()=>{
      const passwordInputRef = useRef();
      const navigate=useNavigate();
      const [isLogin,setIsLogin]=useState(false);
+     const ctx =useContext(AuthContext)
      const trigeractions=()=>{
         if(isLogin===false){
             setIsLogin(true);
@@ -54,6 +56,7 @@ const AuthForm=()=>{
          const data = await response.json();
          console.log('successfully created an account');
          console.log(data.idToken);
+         ctx.login(data.idToken)
          navigate('/Home')
 
          
