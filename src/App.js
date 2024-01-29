@@ -1,10 +1,14 @@
 import AuthForm from "./components/AuthForm";
-
+import { Routes, Route } from "react-router-dom";
+import Home from "./components/pages/Home";
 
 function App() {
   return (
     <div className="App">
-      <AuthForm></AuthForm>
+      <Routes>
+        <Route path="/Home" element={<Home />} />
+        <Route path="/" element={<AuthForm />} />
+      </Routes>
     </div>
   );
 }

@@ -44,7 +44,7 @@
   align-items: center;
 }
 
-.actions button {
+.loginLogout {
   cursor: pointer;
   font: inherit;
   color: white;
@@ -54,7 +54,7 @@
   padding: 0.5rem 2.5rem;
 }
 
-.actions button:hover {
+.loginLogout:hover {
   background-color: rgb(33, 33, 165);
   border-color:rgb(31, 31, 131);
 }
@@ -72,5 +72,18 @@
   color:rgb(31, 31, 131);;
 }
 
+.signBtn{
+    color:white;
+    /* background-color: rgb(80, 234, 182); */
+    margin:0.5rem;
+    background-color:transparent;
+    cursor:pointer;
+    border-radius: 5px;
+    box-shadow: 0 3px 2px 3px rgba(0, 0, 0, 0.6);
+}
 
+.signBtn:hover{
+    color:rgba(245, 245, 245, 0.849)
+    
+}
 
