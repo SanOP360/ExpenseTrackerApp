@@ -75,6 +75,44 @@ const AuthForm=()=>{
        
      };
 
+     const forgotPasswordHandler = async () => {
+       const enteredEmail = emailInputRef.current.value;
+       setIsLoading(true);
+
+       try {
+         const response = await fetch(
+           "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A",
+           {
+             method: "POST",
+             body: JSON.stringify({
+               requestType: "PASSWORD_RESET",
+               email: enteredEmail,
+             }),
+             headers: {
+               "Content-type": "application/json",
+             },
+           }
+         );
+
+         if (!response.ok) {
+           // Handle non-successful response
+           const data = await response.json();
+           throw new Error(
+             data.error?.message || "Failed to send password reset request"
+           );
+         }
+
+         await response.json();
+         console.log("Successfully sent the request to change password");
+         
+       } catch (error) {
+         
+         console.error("Error:", error.message);
+         
+       } finally {
+         setIsLoading(false);
+       }
+     };
 
     return (
       <section className={classes.auth}>
@@ -121,6 +159,9 @@ const AuthForm=()=>{
                 Don't have an account? SignUp
               </button>
             )}
+
+            {isLogin && <button
+            type="btn" className={classes.forgotPassBtn} onClick={forgotPasswordHandler}>Forgot Password</button>}
           </div>
         </form>
       </section>
