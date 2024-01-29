@@ -1,0 +1,12 @@
+.HereBtn{
+    color:Green;
+}
+
+.Home{
+    display: flex;
+    flex-direction: column;
+}
+
+.Home section p{
+    font-size: 2rem;
+}
