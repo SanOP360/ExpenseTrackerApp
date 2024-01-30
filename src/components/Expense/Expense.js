@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import "./Expense.css";
 
 const Expense = () => {
@@ -6,19 +7,24 @@ const Expense = () => {
   const PriceInputRef = useRef();
   const DescripInputRef = useRef();
   const categoriesInputRef = useRef();
+  
+  const [editingItemId, setEditingItemId] = useState(null);
 
   const fetchData = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         "https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses.json"
       );
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Failed to fetch expenses");
       }
 
-      const data = await response.json();
-      const expensesArray = Object.values(data);
+      const data = response.data;
+      const expensesArray = Object.entries(data).map(([id, expense]) => ({
+        id,
+        ...expense,
+      }));
       setExpenses(expensesArray);
     } catch (error) {
       console.error("Error fetching expenses:", error);
@@ -35,38 +41,73 @@ const Expense = () => {
     }
 
     try {
-      const response = await fetch(
-        "https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses.json",
-        {
-          method: "POST",
-          body: JSON.stringify({
+      if (editingItemId) {
+        // Editing an existing item
+        await axios.patch(
+          `https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses/${editingItemId}.json`,
+          {
             price: enteredPrice,
             description: enteredDesc,
             category: enteredCategory,
-          }),
-          headers: {
-            "Content-type": "application/json",
-          },
-        }
-      );
+          }
+        );
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error?.message || "Failed to post");
+        console.log("Successfully edited expense");
+      } else {
+        // Adding a new item
+        await axios.post(
+          "https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses.json",
+          {
+            price: enteredPrice,
+            description: enteredDesc,
+            category: enteredCategory,
+          }
+        );
+
+        console.log("Successfully posted expense");
       }
 
-      console.log("Successfully posted expense");
-
-      // Trigger a refetch of the data after posting
+      // Trigger a refetch of the data after posting/editing
       fetchData();
-    } catch (error) {
-      console.error("Error posting expense:", error);
-    }
 
-    // Clear input fields
-    PriceInputRef.current.value = "";
-    DescripInputRef.current.value = "";
-    categoriesInputRef.current.value = "";
+      // Clear input fields
+      PriceInputRef.current.value = "";
+      DescripInputRef.current.value = "";
+      categoriesInputRef.current.value = "";
+
+      // Delete previous expense if editing
+      if (editingItemId) {
+        await deleteBtnHandler(editingItemId);
+        setEditingItemId(null); // Reset editingItemId
+      }
+    } catch (error) {
+      console.error("Error posting/editing expense:", error);
+    }
+  };
+
+ const deleteBtnHandler = async (expense) => {
+   
+    try {
+    console.log("Deleting expense with ID:", expense.id);
+
+     await axios.delete(
+       `https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses/${expense.id}.json`
+     );
+
+     console.log("Successfully deleted expense");
+     fetchData();
+   } catch (error) {
+     console.log("Error deleting an item", error);
+   }
+ };
+
+
+  const editBtnHandler = (id, description, price, category) => {
+    // Set the editing item ID and populate the form fields
+    setEditingItemId(id);
+    DescripInputRef.current.value = description;
+    PriceInputRef.current.value = price;
+    categoriesInputRef.current.value = category;
   };
 
   useEffect(() => {
@@ -112,7 +153,7 @@ const Expense = () => {
           className="form-button"
           onClick={submitExpenseHandler}
         >
-          Add Expense
+          {editingItemId ? "Edit Expense" : "Add Expense"}
         </button>
       </form>
 
@@ -123,6 +164,26 @@ const Expense = () => {
               <span className="expense-item-desc">{expense.description}</span>
               <span className="expense-item-price">{expense.price}</span>
               <span className="expense-item-category">{expense.category}</span>
+
+              <button
+                className="delBtn"
+                onClick={() => deleteBtnHandler(expense)}
+              >
+                Delete
+              </button>
+              <button
+                className="editBtn"
+                onClick={() =>
+                  editBtnHandler(
+                    expense.id,
+                    expense.description,
+                    expense.price,
+                    expense.category
+                  )
+                }
+              >
+                Edit
+              </button>
             </li>
           ))}
         </ul>

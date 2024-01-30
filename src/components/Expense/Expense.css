@@ -66,6 +66,31 @@
   flex: 1;
   margin-right: 10px; 
 }
+.delBtn{
+  color:white;
+  background-color: rgba(255, 0, 0, 0.799);
+  width: 5rem;
+  border-radius: 5%;
+  box-shadow: 0 2px 3px 2px rgba(84, 80, 80, 0.656);
+  cursor: pointer;
+}
+.delBtn:hover{
+  color:rgba(255, 255, 255, 0.848);
+  background-color: rgba(136, 34, 34, 0.803);
+}
+
+.editBtn{
+  color:white;
+  background-color: transparent;
+  width:5rem;
+  border-radius: 5%;
+  box-shadow: 0 2px 3px 2px rgba(84, 80, 80, 0.656);
+  cursor: pointer;
+}
+.editBtn:hover{
+  color:rgba(255, 255, 255, 0.848);
+  background-color: rgb(137, 134, 134);
+}
 
 @media (max-width: 768px) {
   .expense-item {
