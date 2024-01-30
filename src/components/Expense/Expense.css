@@ -1,0 +1,74 @@
+/* Expense.css */
+
+
+.expense-form {
+  
+  width: 60%;
+  margin:2% auto;
+  background-color: rgba(81, 79, 79, 0.288);
+}
+
+.form-control {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 1.8rem;
+
+}
+
+.form-input,
+.form-button {
+    font-size: 1.5rem;
+  width: auto;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: #201f1f;
+  color: #fff;
+}
+
+.form-button {
+  background-color: #4caf50;
+  width: 100%;
+  color: #fff;
+  cursor: pointer;
+}
+
+.expense-list {
+  max-width: 600px;
+  margin: auto;
+}
+
+.expenses {
+  list-style: none;
+  padding: 0;
+}
+
+.expense-item {
+  background-color: #333;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expense-item-desc,
+.expense-item-price,
+.expense-item-category {
+    color:white;
+  flex: 1;
+  margin-right: 10px; 
+}
+
+@media (max-width: 768px) {
+  .expense-item {
+    flex-direction: column;
+  }
+}

@@ -8,6 +8,7 @@ import './header.css'
 const Header=()=>{
     const ctx= useContext(AuthContext);
     const navigate=useNavigate();
+    const isLogin=ctx.loginCheck;
     const logoutHandler=()=>{
         navigate('/');
         ctx.logout();
@@ -15,15 +16,22 @@ const Header=()=>{
     }
 
     return (
-      <nav className="navbar">
-        <div className="nav-links">
-          <Link to="/Home">Home</Link>
-          <Link to="/Profile">Profile</Link>
-        </div>
-        <button className="logout-btn" onClick={logoutHandler}>
-          Logout
-        </button>
-      </nav>
+      
+        <nav className="navbar">
+          <div className="nav-links">
+            <Link to="/Home">Home</Link>
+            <Link to="/Profile">Profile</Link>
+            {isLogin && <Link to="/Expense">Expense</Link>}
+          </div>
+
+          <h3>Expense Tracker</h3>
+          <button className="logout-btn" onClick={logoutHandler}>
+            Logout
+          </button>
+        </nav>
+
+        
+      
     );
     
 }

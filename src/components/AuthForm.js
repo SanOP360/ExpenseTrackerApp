@@ -57,7 +57,7 @@ const AuthForm=()=>{
          console.log('successfully created an account');
          console.log(data.idToken);
          ctx.login(data.idToken)
-         navigate('/Home')
+         navigate('/Expense')
 
          
         
