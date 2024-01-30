@@ -1,6 +1,4 @@
-// Expense.jsx
-
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Expense.css";
 
 const Expense = () => {
@@ -9,29 +7,71 @@ const Expense = () => {
   const DescripInputRef = useRef();
   const categoriesInputRef = useRef();
 
-  const submitExpenseHandler = () => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        "https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses.json"
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch expenses");
+      }
+
+      const data = await response.json();
+      const expensesArray = Object.values(data);
+      setExpenses(expensesArray);
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+    }
+  };
+
+  const submitExpenseHandler = async () => {
     const enteredPrice = PriceInputRef.current.value;
     const enteredDesc = DescripInputRef.current.value;
     const enteredCategory = categoriesInputRef.current.value;
 
     if (!enteredPrice || !enteredDesc || !enteredCategory) {
-      // Handle invalid input if needed
       return;
     }
 
-    const newExpense = {
-      id: Math.random().toString(),
-      price: enteredPrice,
-      description: enteredDesc,
-      category: enteredCategory,
-    };
+    try {
+      const response = await fetch(
+        "https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses.json",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            price: enteredPrice,
+            description: enteredDesc,
+            category: enteredCategory,
+          }),
+          headers: {
+            "Content-type": "application/json",
+          },
+        }
+      );
 
-    setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error?.message || "Failed to post");
+      }
 
+      console.log("Successfully posted expense");
+
+      // Trigger a refetch of the data after posting
+      fetchData();
+    } catch (error) {
+      console.error("Error posting expense:", error);
+    }
+
+    // Clear input fields
     PriceInputRef.current.value = "";
     DescripInputRef.current.value = "";
     categoriesInputRef.current.value = "";
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
