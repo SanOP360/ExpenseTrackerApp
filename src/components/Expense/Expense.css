@@ -6,12 +6,15 @@
   width: 60%;
   margin:2% auto;
   background-color: rgba(81, 79, 79, 0.288);
+  padding: 1rem;
+  border-radius: 8px;
 }
 
 .form-control {
   margin-bottom: 15px;
   display: flex;
   flex-direction: column;
+
 }
 
 .form-label {
@@ -37,6 +40,10 @@
   width: 100%;
   color: #fff;
   cursor: pointer;
+}
+.form-button:hover{
+  background-color: #2a6c2c;
+  color:#ffffff8f
 }
 
 .expense-list {

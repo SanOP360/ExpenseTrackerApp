@@ -1,14 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { authActions } from "../store/authSlice";
+import { expenseActions } from "../store/ExpenseSlice";
 import "./Expense.css";
 
+
+
 const Expense = () => {
-  const [expenses, setExpenses] = useState([]);
+  const [editingItemId, setEditingItemId] = useState(null);
   const PriceInputRef = useRef();
   const DescripInputRef = useRef();
   const categoriesInputRef = useRef();
-  
-  const [editingItemId, setEditingItemId] = useState(null);
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const totalExpenses = useSelector((state) => state.expense.totalExpenses);
+  const expenses = useSelector((state) => state.expense.expenses);
 
   const fetchData = async () => {
     try {
@@ -25,7 +32,8 @@ const Expense = () => {
         id,
         ...expense,
       }));
-      setExpenses(expensesArray);
+      dispatch(expenseActions.setExpenses(expensesArray));
+      dispatch(authActions.updateTotalExpenses());
     } catch (error) {
       console.error("Error fetching expenses:", error);
     }
@@ -42,7 +50,6 @@ const Expense = () => {
 
     try {
       if (editingItemId) {
-        // Editing an existing item
         await axios.patch(
           `https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses/${editingItemId}.json`,
           {
@@ -54,7 +61,6 @@ const Expense = () => {
 
         console.log("Successfully edited expense");
       } else {
-        // Adding a new item
         await axios.post(
           "https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses.json",
           {
@@ -67,43 +73,39 @@ const Expense = () => {
         console.log("Successfully posted expense");
       }
 
-      // Trigger a refetch of the data after posting/editing
       fetchData();
 
-      // Clear input fields
       PriceInputRef.current.value = "";
       DescripInputRef.current.value = "";
       categoriesInputRef.current.value = "";
 
-      // Delete previous expense if editing
       if (editingItemId) {
         await deleteBtnHandler(editingItemId);
-        setEditingItemId(null); // Reset editingItemId
+        setEditingItemId(null);
       }
+
+      dispatch(authActions.updateTotalExpenses());
     } catch (error) {
       console.error("Error posting/editing expense:", error);
     }
   };
 
- const deleteBtnHandler = async (expense) => {
-   
+  const deleteBtnHandler = async (expense) => {
     try {
-    console.log("Deleting expense with ID:", expense.id);
+      console.log("Deleting expense with ID:", expense.id);
 
-     await axios.delete(
-       `https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses/${expense.id}.json`
-     );
+      await axios.delete(
+        `https://expensetrackerauthentication-default-rtdb.firebaseio.com/Expenses/${expense.id}.json`
+      );
 
-     console.log("Successfully deleted expense");
-     fetchData();
-   } catch (error) {
-     console.log("Error deleting an item", error);
-   }
- };
-
+      console.log("Successfully deleted expense");
+      fetchData();
+    } catch (error) {
+      console.log("Error deleting an item", error);
+    }
+  };
 
   const editBtnHandler = (id, description, price, category) => {
-    // Set the editing item ID and populate the form fields
     setEditingItemId(id);
     DescripInputRef.current.value = description;
     PriceInputRef.current.value = price;
@@ -188,6 +190,12 @@ const Expense = () => {
           ))}
         </ul>
       </div>
+
+      {totalExpenses > 10000 && isAuthenticated && (
+        <div className="premium-button">
+          <button>Activate Premium</button>
+        </div>
+      )}
     </>
   );
 };

@@ -3,13 +3,16 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./components/store/AuthContext";
+import { Provider } from "react-redux";
+import store from "./components/store/store";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <AuthProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </AuthProvider>
+  <Provider store={store}>
+    
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    
+  </Provider>
 );

@@ -1,21 +1,21 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import "./Profile.css";
-import AuthContext from "../store/AuthContext";
+
 
 const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState("");
   const [img, setImg] = useState("");
-    const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
 
   const nameInputRef = useRef();
   const photoInputRef = useRef();
-  const ctx = useContext(AuthContext);
+
+  const idToken = useSelector((state) => state.auth.idToken);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const idToken = ctx.idToken;
-
       try {
         const response = await fetch(
           `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A`,
@@ -49,11 +49,9 @@ const Profile = () => {
     };
 
     fetchUserData();
-  }, [ctx.idToken]);
+  }, [idToken]);
 
   const sendVerificationEmail = async () => {
-    const idToken = ctx.idToken;
-
     try {
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A`,
@@ -95,8 +93,6 @@ const Profile = () => {
     const enteredProfilePhotoUrl = photoInputRef.current.value;
 
     try {
-      const idToken = ctx.idToken;
-
       const response = await fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A",
         {
