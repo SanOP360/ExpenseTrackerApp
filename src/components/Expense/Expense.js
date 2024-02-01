@@ -1,11 +1,13 @@
+
+// Expense.js
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { authActions } from "../store/authSlice";
 import { expenseActions } from "../store/ExpenseSlice";
+
 import "./Expense.css";
-
-
+import { themeActions } from "../store/themeSlice";
 
 const Expense = () => {
   const [editingItemId, setEditingItemId] = useState(null);
@@ -16,6 +18,36 @@ const Expense = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const totalExpenses = useSelector((state) => state.expense.totalExpenses);
   const expenses = useSelector((state) => state.expense.expenses);
+  const [isPremiumActivated, setIsPremium] = useState(false);
+  const activatePremiumHandler = () => {
+    setIsPremium(true);
+  };
+  const deativatePremiumHandler=()=>{
+    setIsPremium(false);
+  }
+
+  const isDarkTheme=useSelector((state)=>state.theme.isDarkTheme);
+
+  const toggleThemeHandler=()=>{
+    dispatch(themeActions.toggleTheme());
+  }
+
+  const downloadCSVHandler = () => {
+    const csvData = expenses.map((expense) => {
+      return `${expense.description},${expense.price},${expense.category}`;
+    });
+
+    const csvContent = `Description,Price,Category\n${csvData.join("\n")}`;
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "expenses.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   const fetchData = async () => {
     try {
@@ -33,6 +65,12 @@ const Expense = () => {
         ...expense,
       }));
       dispatch(expenseActions.setExpenses(expensesArray));
+
+      const totalExpenses = expensesArray.reduce(
+        (total, expense) => total + parseFloat(expense.price),
+        0
+      );
+      dispatch(expenseActions.setTotalExpenses(totalExpenses));
       dispatch(authActions.updateTotalExpenses());
     } catch (error) {
       console.error("Error fetching expenses:", error);
@@ -117,7 +155,7 @@ const Expense = () => {
   }, []);
 
   return (
-    <>
+    <div className={`formCover ${isDarkTheme ? "dark-theme" : ""}`}>
       <form className="expense-form">
         <div className="form-control">
           <label htmlFor="Price" className="form-label">
@@ -191,12 +229,37 @@ const Expense = () => {
         </ul>
       </div>
 
+      <span className="Total">Total Expense: {totalExpenses}</span>
+
       {totalExpenses > 10000 && isAuthenticated && (
         <div className="premium-button">
-          <button>Activate Premium</button>
+          {!isPremiumActivated && (
+            <button
+              className="premium-button1"
+              onClick={activatePremiumHandler}
+            >
+              Activate Premium
+            </button>
+          )}
+          {isPremiumActivated && (
+            <div className="PremiumProp">
+              <button className="propButton" onClick={toggleThemeHandler}>
+                {isDarkTheme ? "Light" : "Dark"} Theme
+              </button>
+              <button className="propButton" onClick={downloadCSVHandler}>
+                Download CSV
+              </button>
+              <button
+                className="propButton"
+                onClick={deativatePremiumHandler}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       )}
-    </>
+    </div>
   );
 };
 
