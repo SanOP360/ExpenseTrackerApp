@@ -1,5 +1,4 @@
 
-// Expense.js
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -152,7 +151,7 @@ const Expense = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className={`formCover ${isDarkTheme ? "dark-theme" : ""}`}>

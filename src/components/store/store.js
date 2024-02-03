@@ -12,7 +12,7 @@ const store = configureStore({
   reducer: {
     auth: authReducer,
     expense: expenseReducer,
-    theme: themeReducer, // Add the theme reducer to the store
+    theme: themeReducer, 
   },
   preloadedState: {
     auth: {
@@ -20,7 +20,7 @@ const store = configureStore({
       isAuthenticated: !!storedIdToken,
     },
     theme: {
-      isDarkTheme: storedTheme === "dark", // Set the initial theme based on stored value
+      isDarkTheme: storedTheme === "dark", 
     },
   },
 });
