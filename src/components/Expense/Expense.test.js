@@ -11,3 +11,4 @@ expect(listItemElements).not.toHaveLength(0);
 
 
 console.log("Number of list items:", listItemElements.length);
+

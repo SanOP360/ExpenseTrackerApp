@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { authActions } from "../store/authSlice";
 import { expenseActions } from "../store/ExpenseSlice";
 
 import "./Expense.css";
@@ -16,8 +15,10 @@ const Expense = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const totalExpenses = useSelector((state) => state.expense.totalExpenses);
+  const myEmail=useSelector((state)=>state.auth.email);
   const expenses = useSelector((state) => state.expense.expenses);
   const [isPremiumActivated, setIsPremium] = useState(false);
+
   const activatePremiumHandler = () => {
     setIsPremium(true);
   };
@@ -63,18 +64,24 @@ const Expense = () => {
         id,
         ...expense,
       }));
-      dispatch(expenseActions.setExpenses(expensesArray));
 
-      const totalExpenses = expensesArray.reduce(
+      const userExpenses = expensesArray.filter(
+        (expense) => expense.email === myEmail
+      );
+
+      dispatch(expenseActions.setExpenses(userExpenses));
+
+      const totalExpenses = userExpenses.reduce(
         (total, expense) => total + parseFloat(expense.price),
         0
       );
       dispatch(expenseActions.setTotalExpenses(totalExpenses));
-      dispatch(authActions.updateTotalExpenses());
+  
     } catch (error) {
       console.error("Error fetching expenses:", error);
     }
   };
+
 
   const submitExpenseHandler = async () => {
     const enteredPrice = PriceInputRef.current.value;
@@ -104,6 +111,7 @@ const Expense = () => {
             price: enteredPrice,
             description: enteredDesc,
             category: enteredCategory,
+            email:myEmail,
           }
         );
 
@@ -121,7 +129,7 @@ const Expense = () => {
         setEditingItemId(null);
       }
 
-      dispatch(authActions.updateTotalExpenses());
+      
     } catch (error) {
       console.error("Error posting/editing expense:", error);
     }
