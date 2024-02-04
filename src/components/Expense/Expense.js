@@ -1,36 +1,36 @@
-
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { expenseActions } from "../store/ExpenseSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 import "./Expense.css";
 import { themeActions } from "../store/themeSlice";
 
 const Expense = () => {
   const [editingItemId, setEditingItemId] = useState(null);
+  const [expenses, setExpenses] = useState([]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [isPremiumActivated, setIsPremium] = useState(false);
+
+  const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const myEmail = useSelector((state) => state.auth.email);
+  const dispatch = useDispatch();
+
   const PriceInputRef = useRef();
   const DescripInputRef = useRef();
   const categoriesInputRef = useRef();
-  const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const totalExpenses = useSelector((state) => state.expense.totalExpenses);
-  const myEmail=useSelector((state)=>state.auth.email);
-  const expenses = useSelector((state) => state.expense.expenses);
-  const [isPremiumActivated, setIsPremium] = useState(false);
 
   const activatePremiumHandler = () => {
     setIsPremium(true);
   };
-  const deativatePremiumHandler=()=>{
+
+  const deactivatePremiumHandler = () => {
     setIsPremium(false);
-  }
+  };
 
-  const isDarkTheme=useSelector((state)=>state.theme.isDarkTheme);
-
-  const toggleThemeHandler=()=>{
+  const toggleThemeHandler = () => {
     dispatch(themeActions.toggleTheme());
-  }
+  };
 
   const downloadCSVHandler = () => {
     const csvData = expenses.map((expense) => {
@@ -69,19 +69,19 @@ const Expense = () => {
         (expense) => expense.email === myEmail
       );
 
-      dispatch(expenseActions.setExpenses(userExpenses));
+      setExpenses(userExpenses);
 
-      const totalExpenses = userExpenses.reduce(
-        (total, expense) => total + parseFloat(expense.price),
-        0
-      );
-      dispatch(expenseActions.setTotalExpenses(totalExpenses));
-  
+      let totalExpenses = 0;
+
+      for (const expense of userExpenses) {
+        totalExpenses += parseFloat(expense.price);
+      }
+
+      setTotalExpenses(totalExpenses);
     } catch (error) {
       console.error("Error fetching expenses:", error);
     }
   };
-
 
   const submitExpenseHandler = async () => {
     const enteredPrice = PriceInputRef.current.value;
@@ -111,7 +111,7 @@ const Expense = () => {
             price: enteredPrice,
             description: enteredDesc,
             category: enteredCategory,
-            email:myEmail,
+            email: myEmail,
           }
         );
 
@@ -128,8 +128,6 @@ const Expense = () => {
         await deleteBtnHandler(editingItemId);
         setEditingItemId(null);
       }
-
-      
     } catch (error) {
       console.error("Error posting/editing expense:", error);
     }
@@ -159,7 +157,7 @@ const Expense = () => {
 
   useEffect(() => {
     fetchData();
-  }, [dispatch]);
+  }, []);
 
   return (
     <div className={`formCover ${isDarkTheme ? "dark-theme" : ""}`}>
@@ -256,10 +254,7 @@ const Expense = () => {
               <button className="propButton" onClick={downloadCSVHandler}>
                 Download CSV
               </button>
-              <button
-                className="propButton"
-                onClick={deativatePremiumHandler}
-              >
+              <button className="propButton" onClick={deactivatePremiumHandler}>
                 Cancel
               </button>
             </div>

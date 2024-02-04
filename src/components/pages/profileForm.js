@@ -17,6 +17,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        console.log(idToken)
         const response = await fetch(
           `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyBOFTxkAWbMMSRNoWMlUi2BL2_lBXrV37A`,
           {
@@ -26,6 +27,7 @@ const Profile = () => {
             }),
             headers: {
               "Content-type": "application/json",
+              
             },
           }
         );
