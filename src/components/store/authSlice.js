@@ -11,11 +11,11 @@ const authSlice = createSlice({
   initialState: initialAuthState,
   reducers: {
     login(state, action) {
-      state.idToken = action.payload;
+      state.idToken = action.payload.idToken;
       state.isAuthenticated = true;
-      state.email = action.payload;
-      localStorage.setItem("email", action.payload);
-      localStorage.setItem("idToken", action.payload);
+      state.email = action.payload.email; 
+      localStorage.setItem("email", state.email);
+      localStorage.setItem("idToken", state.idToken);
     },
 
     logout(state) {
@@ -23,7 +23,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.email = null;
       localStorage.removeItem("idToken");
-      localStorage.removeItem("email");
+      // localStorage.removeItem("email");
     },
   },
 });

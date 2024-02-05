@@ -60,16 +60,24 @@ const Expense = () => {
       }
 
       const data = response.data;
+      console.log('data is',data);
+
       const expensesArray = Object.entries(data).map(([id, expense]) => ({
         id,
         ...expense,
       }));
+      console.log('Expenses Array is',expensesArray);
+      console.log('myEmail is',myEmail);
+    
 
       const userExpenses = expensesArray.filter(
         (expense) => expense.email === myEmail
       );
 
+    
+
       setExpenses(userExpenses);
+      console.log('new updated expenses are',userExpenses)
 
       let totalExpenses = 0;
 
@@ -78,6 +86,7 @@ const Expense = () => {
       }
 
       setTotalExpenses(totalExpenses);
+      console.log('total expenses',totalExpenses);
     } catch (error) {
       console.error("Error fetching expenses:", error);
     }

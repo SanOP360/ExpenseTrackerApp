@@ -1,6 +1,4 @@
-/* Header.css */
 
-/* Header.css */
 
 .navbar {
   background-color: black;
@@ -9,6 +7,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.navbar h3{
+  color:rgba(255, 255, 255, 0.544);
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-style: italic;
+  margin:1%
+
 }
 
 .nav-links {
@@ -40,4 +46,29 @@
 
 .nav-links a:hover {
   color: #ffc107; /* Change color on hover */
+}
+
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px;
+  }
+
+  .navbar h3 {
+    font-size: 1.2rem;
+  }
+
+  .nav-links {
+    gap: 10px;
+  }
+
+  .logout-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+  }
 }

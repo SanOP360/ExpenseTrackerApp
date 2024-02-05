@@ -54,8 +54,8 @@ const AuthForm = () => {
       const data = await response.json();
       console.log("Successfully created an account");
       console.log(data.idToken);
-      dispatch(authActions.login(data.idToken));
-      dispatch(authActions.login(data.email));
+      dispatch(authActions.login({ idToken: data.idToken, email: data.email }));
+
       console.log(data.email)
       navigate("/Expense");
     } catch (err) {
